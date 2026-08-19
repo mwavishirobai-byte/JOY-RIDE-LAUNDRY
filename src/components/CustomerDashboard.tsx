@@ -17,9 +17,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useLaundryCart } from '../context/LaundryCartContext';
 import { api } from '../lib/api';
-import { Order, Booking, Notification } from '../types';
+import { Order, Booking, Notification, DEFAULT_ELDORET_AREAS } from '../types';
 import { formatKES, formatDateTime, getStatusBadgeInfo } from '../lib/utils';
-import { DEFAULT_ELDORET_AREAS } from '../../server/db';
 import { useRealtime } from '../lib/useRealtime';
 
 export const CustomerDashboard: React.FC = () => {

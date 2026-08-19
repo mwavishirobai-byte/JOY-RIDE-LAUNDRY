@@ -15,8 +15,7 @@ import {
 import { useLaundryCart } from '../context/LaundryCartContext';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../lib/api';
-import { DEFAULT_ELDORET_AREAS } from '../../server/db';
-import { Booking } from '../types';
+import { Booking, DEFAULT_ELDORET_AREAS } from '../types';
 
 export const BookingModal: React.FC = () => {
   const { isBookingModalOpen, setIsBookingModalOpen } = useLaundryCart();

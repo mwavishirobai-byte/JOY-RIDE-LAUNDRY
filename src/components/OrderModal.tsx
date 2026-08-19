@@ -22,10 +22,9 @@ import {
 import confetti from 'canvas-confetti';
 import { useLaundryCart } from '../context/LaundryCartContext';
 import { useAuth } from '../context/AuthContext';
-import { ServiceItem, Order } from '../types';
+import { ServiceItem, Order, DEFAULT_ELDORET_AREAS } from '../types';
 import { formatKES } from '../lib/utils';
 import { api, ApiError } from '../lib/api';
-import { DEFAULT_ELDORET_AREAS } from '../../server/db';
 
 interface OrderModalProps {
   availableServices: ServiceItem[];

@@ -39,10 +39,10 @@ import {
   AuditLog,
   AdminMetrics,
   User,
+  DEFAULT_ELDORET_AREAS,
 } from '../../types';
 import { formatKES, formatDateTime, getStatusBadgeInfo } from '../../lib/utils';
 import { useRealtime } from '../../lib/useRealtime';
-import { DEFAULT_ELDORET_AREAS } from '../../../server/db';
 
 export const AdminDashboard: React.FC = () => {
   const { user, isAdmin, logout } = useAuth();

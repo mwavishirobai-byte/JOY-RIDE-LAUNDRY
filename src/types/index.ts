@@ -1,3 +1,20 @@
+export const DEFAULT_ELDORET_AREAS = [
+  'Hawai Road & Environs',
+  'Pioneer Estate',
+  'Elgon View Estate',
+  'Annex / Rivatex',
+  'Kapsoya Estate',
+  'West Indies',
+  'Eldoret CBD & Commercial Center',
+  'Maili Nne',
+  'Action / Huruma',
+  'Langas Estate',
+  'Kimumu Estate',
+  'Chepkoilel / University of Eldoret',
+  'Racecourse / Highlands',
+  'Sosiani & Kisumu Road',
+];
+
 export type UserRole = 'customer' | 'admin' | 'staff';
 
 export interface User {

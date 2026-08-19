@@ -10,7 +10,7 @@ import {
   Home,
   Navigation,
 } from 'lucide-react';
-import { DEFAULT_ELDORET_AREAS } from '../../server/db';
+import { DEFAULT_ELDORET_AREAS } from '../types';
 import { useLaundryCart } from '../context/LaundryCartContext';
 
 interface PickupDeliverySectionProps {

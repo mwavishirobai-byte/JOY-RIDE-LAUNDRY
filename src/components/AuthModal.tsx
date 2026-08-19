@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { User, Lock, Mail, Phone, MapPin, AlertCircle, X, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useLaundryCart } from '../context/LaundryCartContext';
-import { DEFAULT_ELDORET_AREAS } from '../../server/db';
+import { DEFAULT_ELDORET_AREAS } from '../types';
 
 export const AuthModal: React.FC = () => {
   const { isAuthModalOpen, setIsAuthModalOpen, setActiveView } = useLaundryCart();

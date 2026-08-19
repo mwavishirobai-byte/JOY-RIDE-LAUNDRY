@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { LaundryCartProvider, useLaundryCart } from './context/LaundryCartContext';
 import { api } from './lib/api';
-import { ServiceItem, BusinessSettings, Order } from './types';
+import { ServiceItem, BusinessSettings, Order, DEFAULT_ELDORET_AREAS } from './types';
 import { Navbar } from './components/Navbar';
 import { HeroSection } from './components/HeroSection';
 import { ServicesSection } from './components/ServicesSection';
@@ -19,8 +19,6 @@ import { AdminLoginModal } from './components/admin/AdminLoginModal';
 import { Footer } from './components/Footer';
 import { useRealtime } from './lib/useRealtime';
 import { MessageCircle, ShoppingBag, Sparkles } from 'lucide-react';
-
-import { DEFAULT_ELDORET_AREAS } from '../server/db';
 
 const DEFAULT_SETTINGS: BusinessSettings = {
   businessName: 'Joy and Ride Laundry',
