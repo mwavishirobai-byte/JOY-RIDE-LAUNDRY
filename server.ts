@@ -3,9 +3,8 @@ import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import apiRouter from './server/api';
 
-async function startServer() {
+export async function createApp() {
   const app = express();
-  const PORT = 3000;
 
   // JSON body parser with size limits
   app.use(express.json({ limit: '10mb' }));
@@ -34,12 +33,22 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Joy and Ride Laundry server running on http://0.0.0.0:${PORT}`);
-  });
+  return app;
 }
 
-startServer().catch((err) => {
-  console.error('Fatal error starting Joy and Ride server:', err);
-  process.exit(1);
-});
+// Local development / traditional Node start.
+if (process.env.VERCEL !== '1') {
+  createApp()
+    .then((app) => {
+      const PORT = Number(process.env.PORT || 3000);
+      app.listen(PORT, '0.0.0.0', () => {
+        console.log(`🚀 Joy and Ride Laundry server running on http://0.0.0.0:${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error('Fatal error starting Joy and Ride server:', err);
+      process.exit(1);
+    });
+}
+
+export default createApp;
