@@ -1,0 +1,6 @@
+{
+  "name": "Joy and Ride Laundry",
+  "description": "Production full-stack laundry management and customer ordering platform for Joy and Ride Laundry in Eldoret, Kenya.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
