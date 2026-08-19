@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { db } from './db-supabase';
+import { db } from './db';
 import { User, OrderStatus, PaymentStatus } from '../src/types';
 
 const router = express.Router();

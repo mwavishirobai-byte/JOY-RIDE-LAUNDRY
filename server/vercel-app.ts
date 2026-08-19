@@ -1,7 +1,9 @@
 import express from 'express';
 import apiRouter from './api';
+import { dbReady } from './db-supabase';
 
-export function createVercelApp() {
+export async function createVercelApp() {
+  await dbReady;
   const app = express();
 
   app.use(express.json({ limit: '10mb' }));
@@ -18,8 +20,6 @@ export function createVercelApp() {
 
   app.use('/api', apiRouter);
 
-  // API-only 404. Keep missing API responses JSON instead of allowing
-  // the static frontend/host layer to return an HTML 404 response.
   app.use('/api', (_req, res) => {
     res.status(404).json({
       success: false,
