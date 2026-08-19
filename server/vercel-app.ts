@@ -30,5 +30,19 @@ export async function createVercelApp() {
     });
   });
 
+  app.use((err: any, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    console.error('Unhandled API error', {
+      path: req.originalUrl,
+      method: req.method,
+      message: err?.message,
+      stack: err?.stack,
+    });
+    if (res.headersSent) return;
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Internal server error' },
+    });
+  });
+
   return app;
 }
