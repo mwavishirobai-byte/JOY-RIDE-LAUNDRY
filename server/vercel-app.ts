@@ -1,6 +1,7 @@
 import express from 'express';
 import apiRouter from './api';
-import { dbReady } from './db-supabase';
+import { db, dbReady } from './db-supabase';
+import { INITIAL_SETTINGS } from './db-supabase';
 
 export async function createVercelApp() {
   await dbReady;
@@ -15,6 +16,48 @@ export async function createVercelApp() {
       status: 'ok',
       business: 'Joy and Ride Laundry',
       time: new Date().toISOString(),
+    });
+  });
+
+  // These two routes are part of the browser API contract but are not defined
+  // in server/api.ts. Keep them in the same already-working Vercel Express
+  // application so they cannot be intercepted by a separate serverless
+  // function or fall through to Vercel's NOT_FOUND response.
+  app.get('/api/settings/public', (_req, res) => {
+    try {
+      const settings = (db as any).getSettings?.() ?? INITIAL_SETTINGS;
+      return res.status(200).json({ success: true, data: settings });
+    } catch (err: any) {
+      console.error('Public settings error:', err?.message);
+      return res.status(500).json({
+        success: false,
+        error: { code: 'SERVER_ERROR', message: 'Unable to load public settings' },
+      });
+    }
+  });
+
+  app.get('/api/realtime/stream', (req, res) => {
+    res.status(200);
+    res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-cache, no-transform');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders?.();
+
+    const send = (event: string, data: any) => {
+      res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+    };
+
+    send('connected', { timestamp: new Date().toISOString() });
+    const unsubscribe = db.subscribeSSE(send);
+    const heartbeat = setInterval(() => {
+      if (!res.writableEnded) res.write(`: heartbeat ${Date.now()}\n\n`);
+    }, 25000);
+
+    req.on('close', () => {
+      clearInterval(heartbeat);
+      unsubscribe();
+      if (!res.writableEnded) res.end();
     });
   });
 
