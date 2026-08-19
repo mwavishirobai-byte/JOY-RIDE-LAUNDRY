@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import { INITIAL_SETTINGS } from '../../server/db-supabase.js';
+import { db } from '../../server/db.js';
 
 export default async function handler(req: any, res: any) {
   if (req.method !== 'GET') {
@@ -8,33 +8,15 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const url = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    // This endpoint only reads public settings, so use the public/anon key.
-    // Never require or expose the service-role credential for a public GET.
-    const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (!url || !key) {
-      return res.status(500).json({
-        success: false,
-        error: { code: 'CONFIG_ERROR', message: 'Public Supabase configuration is missing' },
-      });
-    }
-
-    const client = createClient(url, key, {
-      auth: { persistSession: false, autoRefreshToken: false },
-    });
-
-    const { data, error } = await client
-      .from('app_state')
-      .select('data')
-      .eq('id', 'main')
-      .maybeSingle();
-
-    if (error) throw error;
+    // Use the same server-side Supabase-backed database instance as the working
+    // /api/services endpoint. Do not create a second client or depend on
+    // NEXT_PUBLIC_* variables inside a serverless function.
+    await db.ready;
+    const settings = db.getSettings();
 
     return res.status(200).json({
       success: true,
-      data: data?.data?.settings || INITIAL_SETTINGS,
+      data: settings || INITIAL_SETTINGS,
     });
   } catch (err: any) {
     console.error('Public settings endpoint failed:', err?.message);
