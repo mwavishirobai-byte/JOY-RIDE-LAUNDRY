@@ -1,4 +1,4 @@
-import { createVercelApp } from '../server/vercel-app';
+import { createVercelApp } from '../server/vercel-app.js';
 
 const app = createVercelApp();
 
