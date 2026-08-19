@@ -5,7 +5,12 @@ import apiRouter from './server/api';
 import { dbReady } from './server/db-supabase';
 
 export async function createApp() {
-  await dbReady;
+  try {
+    await dbReady;
+  } catch (err) {
+    console.error('Database initialization failed; continuing so API error handling can run:', err);
+  }
+
   const app = express();
 
   app.use(express.json({ limit: '10mb' }));
@@ -17,27 +22,11 @@ export async function createApp() {
 
   app.use('/api', apiRouter);
 
-  // Keep API failures inside Express so Vercel returns the real application error
-  // instead of terminating the Lambda with FUNCTION_INVOCATION_FAILED.
   app.use('/api', (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     if (res.headersSent) return next(err);
-
     const message = err instanceof Error ? err.message : String(err);
-    console.error('API request failed:', {
-      method: req.method,
-      path: req.path,
-      name: err?.name,
-      message,
-      stack: err?.stack,
-    });
-
-    return res.status(500).json({
-      success: false,
-      error: {
-        code: 'API_RUNTIME_ERROR',
-        message,
-      },
-    });
+    console.error('API request failed:', { method: req.method, path: req.path, name: err?.name, message, stack: err?.stack });
+    return res.status(500).json({ success: false, error: { code: 'API_RUNTIME_ERROR', message } });
   });
 
   if (process.env.NODE_ENV !== 'production') {
