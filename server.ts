@@ -17,6 +17,29 @@ export async function createApp() {
 
   app.use('/api', apiRouter);
 
+  // Keep API failures inside Express so Vercel returns the real application error
+  // instead of terminating the Lambda with FUNCTION_INVOCATION_FAILED.
+  app.use('/api', (err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (res.headersSent) return next(err);
+
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('API request failed:', {
+      method: req.method,
+      path: req.path,
+      name: err?.name,
+      message,
+      stack: err?.stack,
+    });
+
+    return res.status(500).json({
+      success: false,
+      error: {
+        code: 'API_RUNTIME_ERROR',
+        message,
+      },
+    });
+  });
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({ server: { middlewareMode: true }, appType: 'spa' });
     app.use(vite.middlewares);
