@@ -1,9 +1,21 @@
 import express from 'express';
-import apiRouter from './api';
-import { db, dbReady } from './db-supabase';
 import { INITIAL_SETTINGS } from './db-supabase';
 
 export async function createVercelApp() {
+  // AI Studio's generated environment template uses NEXT_PUBLIC_SUPABASE_URL,
+  // while the server database adapter expects SUPABASE_URL. Normalize the
+  // server-side name before importing anything that initializes the database.
+  if (!process.env.SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    process.env.SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  }
+
+  // Load the database/API modules only after environment normalization. Their
+  // module initialization creates the Supabase client immediately.
+  const [{ db, dbReady }, { default: apiRouter }] = await Promise.all([
+    import('./db-supabase'),
+    import('./api'),
+  ]);
+
   await dbReady;
   const app = express();
 
@@ -20,9 +32,7 @@ export async function createVercelApp() {
   });
 
   // These two routes are part of the browser API contract but are not defined
-  // in server/api.ts. Keep them in the same already-working Vercel Express
-  // application so they cannot be intercepted by a separate serverless
-  // function or fall through to Vercel's NOT_FOUND response.
+  // in server/api.ts. Keep them in the same Vercel Express application.
   app.get('/api/settings/public', (_req, res) => {
     try {
       const settings = (db as any).getSettings?.() ?? INITIAL_SETTINGS;
